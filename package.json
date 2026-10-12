@@ -1,0 +1,22 @@
+{
+  "name": "reza-portfolio-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo for Reza Rizki Ramadhan's Portfolio Website",
+  "scripts": {
+    "dev": "pnpm --filter @portfolio/web dev",
+    "build": "pnpm --filter @portfolio/web build",
+    "preview": "pnpm --filter @portfolio/web preview",
+    "lint": "pnpm --filter \"@portfolio/*\" lint"
+  },
+  "keywords": [
+    "portfolio",
+    "react",
+    "vite",
+    "tailwind",
+    "monorepo"
+  ],
+  "author": "Reza Rizki Ramadhan",
+  "license": "MIT",
+  "packageManager": "pnpm@10.7.0"
+}
