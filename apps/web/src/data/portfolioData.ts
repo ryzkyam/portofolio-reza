@@ -1,4 +1,12 @@
-import profilePic from "../assets/reza-profile.jpg";
+/// <reference types="vite/client" />
+
+declare module "*.jpg";
+declare module "*.jpeg";
+declare module "*.png";
+declare module "*.svg";
+declare module "*.webp";
+
+import profilePic from "@/assets/sertificates/reza-profile.jpg";
 
 import {
   Certificate,
