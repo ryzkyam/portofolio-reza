@@ -18,10 +18,11 @@ export const PERSONAL_INFO = {
   name: "Reza Rizki Ramadhan",
   title: "Full Stack Developer | Quality Assurance Analyst | Business Analyst",
   tagline:
-    "Bridging the gap between stakeholder business needs, rigorous test engineering, and high-performance system execution. I engineer end-to-end resilient web applications grounded in empirical software quality standards, structured requirements traceability, and modern distributed architecture.",
+    "Bridging business requirements, test automation, and full-stack execution. I engineer resilient web applications built on strict quality standards, clear traceability, and modern architecture.",
   status: "Available for Full-Time & Project Opportunities",
   email: "reza.ramadhan.dev@gmail.com",
-  location: "Jakarta, Indonesia (Available for Remote Worldwide)",
+  resumeUrl:"https://skopxltcpbhgtsokdliy.supabase.co/storage/v1/object/public/project-assets/cv_Reza_Rizki.pdf",
+  location: "Jakarta, Indonesia (Available for Remote)",
   github: "https://github.com/ryzkyam",
   linkedin: "https://www.linkedin.com/in/reza-rizki-ramadhan/",
   university: "Information Systems Graduate - Gunadarma University",

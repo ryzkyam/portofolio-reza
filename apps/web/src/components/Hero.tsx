@@ -1,5 +1,5 @@
-import React from 'react';
-import { PERSONAL_INFO, HERO_METRICS } from '../data/portfolioData';
+import React from "react";
+import { HERO_METRICS, PERSONAL_INFO } from "../data/portfolioData";
 
 interface HeroProps {
   onNavigate: (sectionId: string) => void;
@@ -7,7 +7,10 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
   return (
-    <section className="w-full max-w-7xl mx-auto px-gutter py-space-xl lg:py-24 relative" id="home">
+    <section
+      className="w-full max-w-7xl mx-auto px-gutter py-space-xl lg:py-24 relative"
+      id="home"
+    >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
         {/* Left Narrative Column */}
         <div className="lg:col-span-7 flex flex-col gap-space-lg">
@@ -22,13 +25,14 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
           {/* Headline */}
           <div className="space-y-space-xs">
             <h1 className="font-headline-xl text-headline-xl text-on-surface tracking-tight">
-              Hi, I'm{' '}
+              Hi, I'm{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-container to-secondary">
                 {PERSONAL_INFO.name}
               </span>
             </h1>
             <p className="font-headline-sm text-headline-sm text-on-surface-variant font-medium">
-              Full Stack Developer <span className="text-primary mx-1">|</span> Quality Assurance Analyst{' '}
+              Full Stack Developer <span className="text-primary mx-1">|</span>{" "}
+              Quality Assurance Analyst{" "}
               <span className="text-secondary mx-1">|</span> Business Analyst
             </p>
           </div>
@@ -44,7 +48,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
               href="#projects"
               onClick={(e) => {
                 e.preventDefault();
-                onNavigate('projects');
+                onNavigate("projects");
               }}
               className="px-space-xl py-space-md rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-[0_0_24px_-4px_rgba(208,188,255,0.45)] hover:bg-primary-container hover:shadow-[0_0_32px_0px_rgba(160,120,255,0.6)] transition-all duration-300 flex items-center gap-space-xs group"
             >
@@ -57,7 +61,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
               href="#contact"
               onClick={(e) => {
                 e.preventDefault();
-                onNavigate('contact');
+                onNavigate("contact");
               }}
               className="px-space-xl py-space-md rounded-full bg-surface-container/60 hover:bg-surface-container-high border border-outline-variant/30 text-on-surface font-label-lg text-label-lg backdrop-blur-xl transition-all duration-300 flex items-center gap-space-xs"
             >
@@ -72,7 +76,9 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
           <div className="grid grid-cols-3 gap-space-md pt-space-md border-t border-outline-variant/20 max-w-xl">
             {HERO_METRICS.map((metric, idx) => (
               <div key={idx}>
-                <div className={`font-headline-md text-headline-md font-bold ${metric.color}`}>
+                <div
+                  className={`font-headline-md text-headline-md font-bold ${metric.color}`}
+                >
                   {metric.value}
                 </div>
                 <div className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
@@ -97,12 +103,14 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                 <span className="w-3 h-3 rounded-full bg-yellow-500/80 inline-block shadow-sm"></span>
                 <span className="w-3 h-3 rounded-full bg-secondary/80 inline-block shadow-sm"></span>
                 <span className="font-label-sm text-label-sm text-on-surface-variant ml-2 font-mono">
-                  reza-profile
+                  Reza S.Kennedy
                 </span>
               </div>
               <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary/10 border border-secondary/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-ping"></span>
-                <span className="font-label-sm text-label-sm text-secondary font-mono">ACTIVE</span>
+                <span className="font-label-sm text-label-sm text-secondary font-mono">
+                  ACTIVE
+                </span>
               </div>
             </div>
 
@@ -133,7 +141,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                     </span>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/25 font-mono text-[10px]">
-                    Full-Stack & QA 
+                    Full-Stack & QA
                   </span>
                 </div>
               </div>
@@ -142,10 +150,11 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
             {/* Bottom Footer Info */}
             <div className="pt-3 mt-3 border-t border-outline-variant/20 flex items-center justify-between text-body-sm text-outline">
               <span className="flex items-center gap-1 font-mono text-[11px]">
-                <span className="material-symbols-outlined text-[14px] text-secondary">verified</span>
+                <span className="material-symbols-outlined text-[14px] text-secondary">
+                  verified
+                </span>
                 {PERSONAL_INFO.university}
               </span>
-              
             </div>
           </div>
         </div>

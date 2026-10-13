@@ -1,9 +1,12 @@
-import React from 'react';
-import { STATS_STRIP, PILLARS } from '../data/portfolioData';
+import React from "react";
+import { PILLARS, STATS_STRIP } from "../data/portfolioData";
 
 export const About: React.FC = () => {
   return (
-    <section className="w-full max-w-7xl mx-auto px-gutter py-space-xl relative" id="about">
+    <section
+      className="w-full max-w-7xl mx-auto px-gutter py-space-xl relative"
+      id="about"
+    >
       <div className="flex flex-col gap-space-lg">
         {/* Section Header */}
         <div className="flex flex-col gap-space-xs max-w-3xl">
@@ -17,17 +20,19 @@ export const About: React.FC = () => {
             Where Business Clarity Meets Engineering Discipline
           </h2>
           <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-            Holding an academic background in Computer Science from Gunadarma University, I engineered my
-            career path through a specialized convergence of three disciplines. I believe flawless
-            software cannot happen in a silo: it demands crystal-clear requirement definition, robust
-            full-stack architecture, and defensive automated testing.
+            With a background in Information Systems from Gunadarma University,
+            I focus on integrating product requirements, software engineering,
+            and system quality. I believe that building high-impact software
+            requires seamless end-to-end collaboration—from clear requirements
+            analysis and clean full-stack architecture to automated testing from
+            day one
           </p>
         </div>
 
         {/* Quick Stats Strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-space-md">
           {STATS_STRIP.map((stat, idx) => {
-            const isPrimary = stat.iconColor === 'primary';
+            const isPrimary = stat.iconColor === "primary";
             return (
               <div
                 key={idx}
@@ -35,10 +40,12 @@ export const About: React.FC = () => {
               >
                 <div
                   className={`flex items-center gap-space-xs ${
-                    isPrimary ? 'text-primary' : 'text-secondary'
+                    isPrimary ? "text-primary" : "text-secondary"
                   } mb-1`}
                 >
-                  <span className="material-symbols-outlined text-[20px]">{stat.icon}</span>
+                  <span className="material-symbols-outlined text-[20px]">
+                    {stat.icon}
+                  </span>
                   <span className="font-label-sm text-label-sm text-on-surface-variant">
                     {stat.label}
                   </span>
@@ -57,20 +64,20 @@ export const About: React.FC = () => {
         {/* The Triad: 3 Core Pillars */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-space-lg pt-space-xs">
           {PILLARS.map((pillar, idx) => {
-            const isSecondary = pillar.color === 'secondary';
+            const isSecondary = pillar.color === "secondary";
             const iconBg = isSecondary
-              ? 'bg-secondary/10 border-secondary/25 text-secondary'
+              ? "bg-secondary/10 border-secondary/25 text-secondary"
               : idx === 0
-              ? 'bg-primary/10 border-primary/25 text-primary'
-              : 'bg-primary-container/20 border-primary-container/30 text-primary-fixed';
+                ? "bg-primary/10 border-primary/25 text-primary"
+                : "bg-primary-container/20 border-primary-container/30 text-primary-fixed";
             const hoverBorder = isSecondary
-              ? 'hover:border-secondary/40'
-              : 'hover:border-primary/40';
+              ? "hover:border-secondary/40"
+              : "hover:border-primary/40";
             const tagBg = isSecondary
-              ? 'bg-secondary/10 text-secondary'
+              ? "bg-secondary/10 text-secondary"
               : idx === 0
-              ? 'bg-surface-container-high text-on-surface-variant'
-              : 'bg-primary/10 text-primary';
+                ? "bg-surface-container-high text-on-surface-variant"
+                : "bg-primary/10 text-primary";
 
             return (
               <div
@@ -88,7 +95,7 @@ export const About: React.FC = () => {
                   <div>
                     <span
                       className={`font-label-sm text-label-sm uppercase font-mono tracking-wider ${
-                        isSecondary ? 'text-secondary' : 'text-primary'
+                        isSecondary ? "text-secondary" : "text-primary"
                       }`}
                     >
                       {pillar.domain}
