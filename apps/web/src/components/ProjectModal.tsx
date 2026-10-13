@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { PROJECTS } from '../data/portfolioData';
+import { PROJECTS as STATIC_PROJECTS } from '../data/portfolioData';
+import { getProjects } from '../services/portfolioService';
 import { Badge } from '@portfolio/ui';
 
 interface ProjectModalProps {
@@ -14,6 +15,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   onNavigateContact,
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [project, setProject] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -29,6 +32,49 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
     if (projectId) {
       document.body.style.overflow = 'hidden';
       window.addEventListener('keydown', handleKeyDown);
+
+      // Fetch data project berdasarkan ID/Slug dari Supabase
+      async function fetchProjectDetail() {
+        setLoading(true);
+        try {
+          const data = await getProjects();
+          if (data && data.length > 0) {
+            // Cocokkan berdasarkan slug atau id di Supabase
+            const found = data.find((p: any) => p.slug === projectId || p.id === projectId);
+            if (found) {
+              setProject({
+                id: found.slug || found.id,
+                title: found.title,
+                overview: found.overview,
+                background: found.background,
+                objectives: found.objectives || [],
+                roleAndContribution: found.role_and_contribution || [],
+                process: found.process || [],
+                outputAndFeatures: found.output_and_features || [],
+                toolsUsed: found.tools_used || [],
+                keyLearnings: found.key_learnings || [],
+                gallery: found.gallery_urls || [],
+                tagNote: found.tag_note || found.category,
+                statusNote: found.status_note || 'Deployed & Operational',
+              });
+              setLoading(false);
+              return;
+            }
+          }
+          
+          // Fallback ke data statis jika tidak ketemu di Supabase
+          const staticFound = STATIC_PROJECTS.find((p) => p.id === projectId);
+          setProject(staticFound || STATIC_PROJECTS[0]);
+        } catch (err) {
+          console.error('Failed to fetch project detail:', err);
+          const staticFound = STATIC_PROJECTS.find((p) => p.id === projectId);
+          setProject(staticFound || STATIC_PROJECTS[0]);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      fetchProjectDetail();
     } else {
       document.body.style.overflow = 'auto';
     }
@@ -39,9 +85,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
     };
   }, [projectId, selectedImage, onClose]);
 
-  if (!projectId) return null;
-
-  const project = PROJECTS.find((p) => p.id === projectId) || PROJECTS[0];
+  if (!projectId || !project) return null;
 
   const handleDiscussClick = () => {
     onClose();
@@ -87,266 +131,274 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
           {/* Scrollable Modal Content with All 9 Sections in Order */}
           <div className="flex-1 overflow-y-auto p-space-lg md:p-space-xl space-y-space-xl text-on-surface">
-            {/* SECTION 1: Overview */}
-            <section className="space-y-space-xs">
-              <div className="flex items-center gap-2 text-primary">
-                <span className="material-symbols-outlined text-[20px]">domain_verification</span>
-                <span className="font-mono text-xs uppercase tracking-widest font-semibold">
-                  01. System Overview
-                </span>
+            {loading ? (
+              <div className="py-20 text-center font-mono text-outline animate-pulse">
+                Loading case study details...
               </div>
-              <h3 className="font-headline-sm text-headline-sm font-semibold">
-                Executive Overview & Architecture
-              </h3>
-              <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                {project.overview}
-              </p>
-            </section>
-
-            {/* SECTION 2: Background */}
-            <section className="space-y-space-xs">
-              <div className="flex items-center gap-2 text-secondary">
-                <span className="material-symbols-outlined text-[20px]">history_edu</span>
-                <span className="font-mono text-xs uppercase tracking-widest font-semibold">
-                  02. Context & Problem Space
-                </span>
-              </div>
-              <h3 className="font-headline-sm text-headline-sm font-semibold">
-                Business Background & Operational Bottlenecks
-              </h3>
-              <div className="p-4 rounded-2xl bg-surface-container/60 border border-outline-variant/25 leading-relaxed text-body-sm text-on-surface-variant">
-                {project.background}
-              </div>
-            </section>
-
-            {/* SECTION 3: Objectives */}
-            <section className="space-y-space-xs">
-              <div className="flex items-center gap-2 text-primary">
-                <span className="material-symbols-outlined text-[20px]">target</span>
-                <span className="font-mono text-xs uppercase tracking-widest font-semibold">
-                  03. Project Goals
-                </span>
-              </div>
-              <h3 className="font-headline-sm text-headline-sm font-semibold">
-                Strategic Engineering Objectives
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm pt-1">
-                {project.objectives.map((objective, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3.5 rounded-xl bg-surface-container/50 border border-outline-variant/20 flex items-start gap-3"
-                  >
-                    <span className="w-5 h-5 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0 text-xs font-mono font-bold mt-0.5">
-                      {idx + 1}
-                    </span>
-                    <span className="text-body-sm text-on-surface-variant leading-relaxed">
-                      {objective}
+            ) : (
+              <>
+                {/* SECTION 1: Overview */}
+                <section className="space-y-space-xs">
+                  <div className="flex items-center gap-2 text-primary">
+                    <span className="material-symbols-outlined text-[20px]">domain_verification</span>
+                    <span className="font-mono text-xs uppercase tracking-widest font-semibold">
+                      01. System Overview
                     </span>
                   </div>
-                ))}
-              </div>
-            </section>
+                  <h3 className="font-headline-sm text-headline-sm font-semibold">
+                    Executive Overview & Architecture
+                  </h3>
+                  <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                    {project.overview}
+                  </p>
+                </section>
 
-            {/* SECTION 4: Role & Contribution */}
-            <section className="space-y-space-xs">
-              <div className="flex items-center gap-2 text-secondary">
-                <span className="material-symbols-outlined text-[20px]">engineering</span>
-                <span className="font-mono text-xs uppercase tracking-widest font-semibold">
-                  04. Ownership & Responsibilities
-                </span>
-              </div>
-              <h3 className="font-headline-sm text-headline-sm font-semibold">
-                Role & Core Contributions
-              </h3>
-              <div className="space-y-2.5 pt-1">
-                {project.roleAndContribution.map((role, idx) => {
-                  const parts = role.split(':');
-                  const roleName = parts.length > 1 ? parts[0] : null;
-                  const roleText = parts.length > 1 ? parts.slice(1).join(':') : role;
+                {/* SECTION 2: Background */}
+                <section className="space-y-space-xs">
+                  <div className="flex items-center gap-2 text-secondary">
+                    <span className="material-symbols-outlined text-[20px]">history_edu</span>
+                    <span className="font-mono text-xs uppercase tracking-widest font-semibold">
+                      02. Context & Problem Space
+                    </span>
+                  </div>
+                  <h3 className="font-headline-sm text-headline-sm font-semibold">
+                    Business Background & Operational Bottlenecks
+                  </h3>
+                  <div className="p-4 rounded-2xl bg-surface-container/60 border border-outline-variant/25 leading-relaxed text-body-sm text-on-surface-variant">
+                    {project.background}
+                  </div>
+                </section>
 
-                  return (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-xl bg-surface-container-high/40 border border-outline-variant/25 flex items-start gap-3"
-                    >
-                      <span className="material-symbols-outlined text-[18px] text-secondary mt-0.5 shrink-0">
-                        arrow_right_alt
-                      </span>
-                      <div className="text-body-sm text-on-surface-variant leading-relaxed">
-                        {roleName && (
-                          <strong className="text-on-surface font-semibold block sm:inline mr-2">
-                            {roleName}:
-                          </strong>
-                        )}
-                        <span>{roleText.trim()}</span>
+                {/* SECTION 3: Objectives */}
+                <section className="space-y-space-xs">
+                  <div className="flex items-center gap-2 text-primary">
+                    <span className="material-symbols-outlined text-[20px]">target</span>
+                    <span className="font-mono text-xs uppercase tracking-widest font-semibold">
+                      03. Project Goals
+                    </span>
+                  </div>
+                  <h3 className="font-headline-sm text-headline-sm font-semibold">
+                    Strategic Engineering Objectives
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm pt-1">
+                    {project.objectives?.map((objective: string, idx: number) => (
+                      <div
+                        key={idx}
+                        className="p-3.5 rounded-xl bg-surface-container/50 border border-outline-variant/20 flex items-start gap-3"
+                      >
+                        <span className="w-5 h-5 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0 text-xs font-mono font-bold mt-0.5">
+                          {idx + 1}
+                        </span>
+                        <span className="text-body-sm text-on-surface-variant leading-relaxed">
+                          {objective}
+                        </span>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+                    ))}
+                  </div>
+                </section>
 
-            {/* SECTION 5: Process */}
-            <section className="space-y-space-xs">
-              <div className="flex items-center gap-2 text-primary">
-                <span className="material-symbols-outlined text-[20px]">timeline</span>
-                <span className="font-mono text-xs uppercase tracking-widest font-semibold">
-                  05. Methodology & Execution
-                </span>
-              </div>
-              <h3 className="font-headline-sm text-headline-sm font-semibold">
-                Engineering & Analysis Process
-              </h3>
-              <div className="space-y-3 pt-1">
-                {project.process.map((step, idx) => {
-                  const splitIdx = step.indexOf(':');
-                  const phaseTitle = splitIdx !== -1 ? step.slice(0, splitIdx) : null;
-                  const phaseBody = splitIdx !== -1 ? step.slice(splitIdx + 1) : step;
+                {/* SECTION 4: Role & Contribution */}
+                <section className="space-y-space-xs">
+                  <div className="flex items-center gap-2 text-secondary">
+                    <span className="material-symbols-outlined text-[20px]">engineering</span>
+                    <span className="font-mono text-xs uppercase tracking-widest font-semibold">
+                      04. Ownership & Responsibilities
+                    </span>
+                  </div>
+                  <h3 className="font-headline-sm text-headline-sm font-semibold">
+                    Role & Core Contributions
+                  </h3>
+                  <div className="space-y-2.5 pt-1">
+                    {project.roleAndContribution?.map((role: string, idx: number) => {
+                      const parts = role.split(':');
+                      const roleName = parts.length > 1 ? parts[0] : null;
+                      const roleText = parts.length > 1 ? parts.slice(1).join(':') : role;
 
-                  return (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-2xl bg-surface-container/60 border border-outline-variant/20 hover:border-primary/30 transition-colors"
-                    >
-                      {phaseTitle && (
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono text-[11px] font-bold">
-                            {phaseTitle.trim()}
+                      return (
+                        <div
+                          key={idx}
+                          className="p-4 rounded-xl bg-surface-container-high/40 border border-outline-variant/25 flex items-start gap-3"
+                        >
+                          <span className="material-symbols-outlined text-[18px] text-secondary mt-0.5 shrink-0">
+                            arrow_right_alt
                           </span>
+                          <div className="text-body-sm text-on-surface-variant leading-relaxed">
+                            {roleName && (
+                              <strong className="text-on-surface font-semibold block sm:inline mr-2">
+                                {roleName}:
+                              </strong>
+                            )}
+                            <span>{roleText.trim()}</span>
+                          </div>
                         </div>
-                      )}
-                      <p className="text-body-sm text-on-surface-variant leading-relaxed">
-                        {phaseBody.trim()}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+                      );
+                    })}
+                  </div>
+                </section>
 
-            {/* SECTION 6: Output & Features */}
-            <section className="space-y-space-xs">
-              <div className="flex items-center gap-2 text-secondary">
-                <span className="material-symbols-outlined text-[20px]">featured_play_list</span>
-                <span className="font-mono text-xs uppercase tracking-widest font-semibold">
-                  06. Delivered Capabilities
-                </span>
-              </div>
-              <h3 className="font-headline-sm text-headline-sm font-semibold">
-                Outputs & Key Feature Sets
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm pt-1">
-                {project.outputAndFeatures.map((feature, idx) => {
-                  const parts = feature.split(':');
-                  const featName = parts.length > 1 ? parts[0] : null;
-                  const featBody = parts.length > 1 ? parts.slice(1).join(':') : feature;
-
-                  return (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-xl bg-surface-container-highest/30 border border-outline-variant/20"
-                    >
-                      <div className="flex items-center gap-2 text-secondary mb-1">
-                        <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                        <strong className="text-on-surface text-[13px] font-semibold">
-                          {featName ? featName.trim() : `Feature 0${idx + 1}`}
-                        </strong>
-                      </div>
-                      <p className="text-body-sm text-on-surface-variant leading-relaxed">
-                        {featBody.trim()}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-
-            {/* SECTION 7: Tools Used */}
-            <section className="space-y-space-xs">
-              <div className="flex items-center gap-2 text-primary">
-                <span className="material-symbols-outlined text-[20px]">construction</span>
-                <span className="font-mono text-xs uppercase tracking-widest font-semibold">
-                  07. Technical Stack
-                </span>
-              </div>
-              <h3 className="font-headline-sm text-headline-sm font-semibold">
-                Tools & Technologies Leveraged
-              </h3>
-              <div className="flex flex-wrap gap-2 pt-2">
-                {project.toolsUsed.map((tool, idx) => (
-                  <Badge
-                    key={idx}
-                    variant={idx % 2 === 0 ? 'fullstack' : 'qa'}
-                    className="px-3 py-1.5 text-xs font-mono shadow-sm"
-                  >
-                    {tool}
-                  </Badge>
-                ))}
-              </div>
-            </section>
-
-            {/* SECTION 8: Key Learnings */}
-            <section className="space-y-space-xs">
-              <div className="flex items-center gap-2 text-secondary">
-                <span className="material-symbols-outlined text-[20px]">lightbulb</span>
-                <span className="font-mono text-xs uppercase tracking-widest font-semibold">
-                  08. Professional Insights
-                </span>
-              </div>
-              <h3 className="font-headline-sm text-headline-sm font-semibold">
-                Key Technical & Business Learnings
-              </h3>
-              <div className="space-y-2.5 pt-1">
-                {project.keyLearnings.map((learning, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3.5 rounded-xl bg-surface-container/60 border border-outline-variant/20 flex items-start gap-3"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-primary mt-0.5 shrink-0">
-                      psychology
+                {/* SECTION 5: Process */}
+                <section className="space-y-space-xs">
+                  <div className="flex items-center gap-2 text-primary">
+                    <span className="material-symbols-outlined text-[20px]">timeline</span>
+                    <span className="font-mono text-xs uppercase tracking-widest font-semibold">
+                      05. Methodology & Execution
                     </span>
-                    <p className="text-body-sm text-on-surface-variant leading-relaxed">{learning}</p>
                   </div>
-                ))}
-              </div>
-            </section>
+                  <h3 className="font-headline-sm text-headline-sm font-semibold">
+                    Engineering & Analysis Process
+                  </h3>
+                  <div className="space-y-3 pt-1">
+                    {project.process?.map((step: string, idx: number) => {
+                      const splitIdx = step.indexOf(':');
+                      const phaseTitle = splitIdx !== -1 ? step.slice(0, splitIdx) : null;
+                      const phaseBody = splitIdx !== -1 ? step.slice(splitIdx + 1) : step;
 
-            {/* SECTION 9: Gallery */}
-            <section className="space-y-space-xs">
-              <div className="flex items-center gap-2 text-primary">
-                <span className="material-symbols-outlined text-[20px]">photo_library</span>
-                <span className="font-mono text-xs uppercase tracking-widest font-semibold">
-                  09. Visual Documentation
-                </span>
-              </div>
-              <h3 className="font-headline-sm text-headline-sm font-semibold">
-                Project Gallery & Interface Previews
-              </h3>
-              <p className="text-body-sm text-outline">
-                Click any screenshot thumbnail to expand into full-resolution preview.
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-space-md pt-2">
-                {project.gallery.map((imgUrl, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => setSelectedImage(imgUrl)}
-                    className="group relative h-44 rounded-2xl overflow-hidden bg-surface-container border border-outline-variant/30 hover:border-primary/50 transition-all cursor-pointer shadow-lg"
-                  >
-                    <img
-                      src={imgUrl}
-                      alt={`${project.title} screenshot ${idx + 1}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-85 group-hover:opacity-100"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/90 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity"></div>
-                    <div className="absolute bottom-2.5 right-2.5 p-1.5 rounded-lg bg-surface-container-lowest/80 text-primary opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">
-                      <span className="material-symbols-outlined text-[16px]">zoom_in</span>
-                    </div>
+                      return (
+                        <div
+                          key={idx}
+                          className="p-4 rounded-2xl bg-surface-container/60 border border-outline-variant/20 hover:border-primary/30 transition-colors"
+                        >
+                          {phaseTitle && (
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono text-[11px] font-bold">
+                                {phaseTitle.trim()}
+                              </span>
+                            </div>
+                          )}
+                          <p className="text-body-sm text-on-surface-variant leading-relaxed">
+                            {phaseBody.trim()}
+                          </p>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
-              </div>
-            </section>
+                </section>
+
+                {/* SECTION 6: Output & Features */}
+                <section className="space-y-space-xs">
+                  <div className="flex items-center gap-2 text-secondary">
+                    <span className="material-symbols-outlined text-[20px]">featured_play_list</span>
+                    <span className="font-mono text-xs uppercase tracking-widest font-semibold">
+                      06. Delivered Capabilities
+                    </span>
+                  </div>
+                  <h3 className="font-headline-sm text-headline-sm font-semibold">
+                    Outputs & Key Feature Sets
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm pt-1">
+                    {project.outputAndFeatures?.map((feature: string, idx: number) => {
+                      const parts = feature.split(':');
+                      const featName = parts.length > 1 ? parts[0] : null;
+                      const featBody = parts.length > 1 ? parts.slice(1).join(':') : feature;
+
+                      return (
+                        <div
+                          key={idx}
+                          className="p-4 rounded-xl bg-surface-container-highest/30 border border-outline-variant/20"
+                        >
+                          <div className="flex items-center gap-2 text-secondary mb-1">
+                            <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                            <strong className="text-on-surface text-[13px] font-semibold">
+                              {featName ? featName.trim() : `Feature 0${idx + 1}`}
+                            </strong>
+                          </div>
+                          <p className="text-body-sm text-on-surface-variant leading-relaxed">
+                            {featBody.trim()}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                {/* SECTION 7: Tools Used */}
+                <section className="space-y-space-xs">
+                  <div className="flex items-center gap-2 text-primary">
+                    <span className="material-symbols-outlined text-[20px]">construction</span>
+                    <span className="font-mono text-xs uppercase tracking-widest font-semibold">
+                      07. Technical Stack
+                    </span>
+                  </div>
+                  <h3 className="font-headline-sm text-headline-sm font-semibold">
+                    Tools & Technologies Leveraged
+                  </h3>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {project.toolsUsed?.map((tool: string, idx: number) => (
+                      <Badge
+                        key={idx}
+                        variant={idx % 2 === 0 ? 'fullstack' : 'qa'}
+                        className="px-3 py-1.5 text-xs font-mono shadow-sm"
+                      >
+                        {tool}
+                      </Badge>
+                    ))}
+                  </div>
+                </section>
+
+                {/* SECTION 8: Key Learnings */}
+                <section className="space-y-space-xs">
+                  <div className="flex items-center gap-2 text-secondary">
+                    <span className="material-symbols-outlined text-[20px]">lightbulb</span>
+                    <span className="font-mono text-xs uppercase tracking-widest font-semibold">
+                      08. Professional Insights
+                    </span>
+                  </div>
+                  <h3 className="font-headline-sm text-headline-sm font-semibold">
+                    Key Technical & Business Learnings
+                  </h3>
+                  <div className="space-y-2.5 pt-1">
+                    {project.keyLearnings?.map((learning: string, idx: number) => (
+                      <div
+                        key={idx}
+                        className="p-3.5 rounded-xl bg-surface-container/60 border border-outline-variant/20 flex items-start gap-3"
+                      >
+                        <span className="material-symbols-outlined text-[18px] text-primary mt-0.5 shrink-0">
+                          psychology
+                        </span>
+                        <p className="text-body-sm text-on-surface-variant leading-relaxed">{learning}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                {/* SECTION 9: Gallery */}
+                <section className="space-y-space-xs">
+                  <div className="flex items-center gap-2 text-primary">
+                    <span className="material-symbols-outlined text-[20px]">photo_library</span>
+                    <span className="font-mono text-xs uppercase tracking-widest font-semibold">
+                      09. Visual Documentation
+                    </span>
+                  </div>
+                  <h3 className="font-headline-sm text-headline-sm font-semibold">
+                    Project Gallery & Interface Previews
+                  </h3>
+                  <p className="text-body-sm text-outline">
+                    Click any screenshot thumbnail to expand into full-resolution preview.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-space-md pt-2">
+                    {project.gallery?.map((imgUrl: string, idx: number) => (
+                      <div
+                        key={idx}
+                        onClick={() => setSelectedImage(imgUrl)}
+                        className="group relative h-44 rounded-2xl overflow-hidden bg-surface-container border border-outline-variant/30 hover:border-primary/50 transition-all cursor-pointer shadow-lg"
+                      >
+                        <img
+                          src={imgUrl}
+                          alt={`${project.title} screenshot ${idx + 1}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-85 group-hover:opacity-100"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/90 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity"></div>
+                        <div className="absolute bottom-2.5 right-2.5 p-1.5 rounded-lg bg-surface-container-lowest/80 text-primary opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">
+                          <span className="material-symbols-outlined text-[16px]">zoom_in</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </>
+            )}
           </div>
 
           {/* Modal Footer Actions */}
