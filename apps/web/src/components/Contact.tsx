@@ -169,7 +169,7 @@ export const Contact: React.FC = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    placeholder="e.g. Alexander Lee"
+                    placeholder="e.g. Leon s kennedy"
                     className="w-full px-4 py-3 rounded-xl bg-surface-container/70 border border-outline-variant/30 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-sm text-body-sm"
                   />
                 </div>
@@ -188,7 +188,7 @@ export const Contact: React.FC = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    placeholder="e.g. alex@company.com"
+                    placeholder="e.g. @company.com"
                     className="w-full px-4 py-3 rounded-xl bg-surface-container/70 border border-outline-variant/30 text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all font-body-sm text-body-sm"
                   />
                 </div>
